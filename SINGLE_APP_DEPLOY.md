@@ -149,3 +149,4 @@ Vercel (and most platforms) will auto-deploy!
 
 Your app is now ready for single-app deployment. Just deploy the `frontend` folder to Vercel and you're done!
 
+
