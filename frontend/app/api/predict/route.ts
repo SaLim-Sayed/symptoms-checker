@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { symptomPredictor } from '../../../lib/symptomPredictor'
+import { symptomPredictor } from '../../../lib/symptomPredictor.js'
 
 export async function POST(request: Request) {
   try {
