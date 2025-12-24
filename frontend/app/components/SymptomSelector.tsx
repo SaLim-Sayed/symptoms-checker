@@ -344,9 +344,9 @@ export default function SymptomSelector({
 
   return (
     <>
-      <div className={`flex flex-col md:flex-row gap-6 h-full ${isRTL ? 'md:flex-row-reverse' : ''}`}>
+      <div className={`flex flex-col md:flex-row gap-6 h-full`} dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Sidebar for Desktop */}
-        <aside className={`hidden md:flex md:flex-col md:w-64 lg:w-72 bg-gray-50 rounded-lg p-4 h-fit sticky top-4 ${isRTL ? 'md:order-2' : ''}`}>
+        <aside className="hidden md:flex md:flex-col md:w-64 lg:w-72 bg-gray-50 rounded-lg p-4 h-fit sticky top-4">
           <h2 className={`text-xl font-semibold text-gray-800 mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
             {t.selector.selectBodyPart}
           </h2>
@@ -393,7 +393,7 @@ export default function SymptomSelector({
         </aside>
 
         {/* Mobile List View */}
-        <div className="md:hidden">
+        <div className="md:hidden" dir={isRTL ? 'rtl' : 'ltr'}>
           <h2 className={`text-xl font-semibold text-gray-800 mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
             {t.selector.selectBodyPart}
           </h2>
@@ -440,7 +440,7 @@ export default function SymptomSelector({
         </div>
 
         {/* Main Content Area - Desktop */}
-        <div className={`hidden md:block flex-1 ${isRTL ? 'md:order-1' : ''}`}>
+        <div className={`hidden md:block flex-1`} dir={isRTL ? 'rtl' : 'ltr'}>
           {selectedCategory ? (
             <div>
               <div className={`mb-4 flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
@@ -479,7 +479,7 @@ export default function SymptomSelector({
             </div>
           ) : (
             <div className="flex items-center justify-center h-64 text-gray-400">
-              <div className={`text-center ${isRTL ? 'text-right' : 'text-left'}`}>
+              <div className={`${isRTL ? 'text-right' : 'text-left'}`}>
                 <p className="text-lg mb-2">{t.selector.selectBodyPart}</p>
                 <p className="text-sm">{t.selector.selectCategory}</p>
               </div>
