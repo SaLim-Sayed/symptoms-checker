@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { symptomPredictor } from '@/app/lib/symptomPredictor'
+import { symptomPredictor } from '../../lib/symptomPredictor'
 
 export async function GET() {
   try {
