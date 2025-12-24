@@ -12,16 +12,14 @@ A modern web application that uses AI to predict possible health conditions base
 
 ## Tech Stack
 
-### Frontend
-- **Next.js 14** - React framework
+### Frontend + Backend (Single App)
+- **Next.js 14** - React framework with API routes
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
 - **Axios** - HTTP client
+- **Next.js API Routes** - Built-in backend (no separate server needed!)
 
-### Backend
-- **FastAPI** - Modern Python web framework
-- **Pydantic** - Data validation
-- **Uvicorn** - ASGI server
+> **Note:** The app now uses Next.js API routes instead of a separate Python backend, making deployment much simpler!
 
 ## Project Structure
 
@@ -58,17 +56,38 @@ This will automatically:
 ### Prerequisites
 
 - Node.js 18+ and npm/yarn
-- Python 3.8+
-- pip (Python package manager)
 
-### Backend Setup
+### Quick Setup (Single App)
+
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Run the development server:
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:3000`
+
+**That's it!** The backend API routes are built into Next.js, so no separate server is needed.
+
+### Legacy Setup (Separate Backend - Optional)
+
+If you want to use the Python backend separately:
 
 1. Navigate to the backend directory:
 ```bash
 cd backend
 ```
 
-2. Create a virtual environment (recommended):
+2. Create a virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -86,30 +105,6 @@ python main.py
 
 The API will be available at `http://localhost:8000`
 
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create a `.env.local` file (optional, defaults to localhost:8000):
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
-
-4. Run the development server:
-```bash
-npm run dev
-```
-
-The application will be available at `http://localhost:3000`
-
 ## Usage
 
 1. Start both the backend and frontend servers
@@ -125,8 +120,9 @@ The application will be available at `http://localhost:3000`
 
 ## API Endpoints
 
-### `GET /`
-Health check endpoint
+All API endpoints are built into Next.js and available at:
+- `http://localhost:3000/api/symptoms` (development)
+- `https://your-domain.com/api/symptoms` (production)
 
 ### `GET /api/symptoms`
 Get list of all available symptoms
@@ -169,6 +165,23 @@ The symptom predictor uses a rule-based AI system that:
 
 **Note**: This is a simplified implementation for demonstration. In production, you would replace this with a trained machine learning model using real medical data.
 
+## Deployment
+
+### Single App Deployment (Recommended)
+
+Deploy just the `frontend` folder to Vercel, Netlify, or Railway. See [SINGLE_APP_DEPLOY.md](./SINGLE_APP_DEPLOY.md) for detailed instructions.
+
+**Quick Deploy to Vercel:**
+1. Push code to GitHub
+2. Go to [vercel.com](https://vercel.com)
+3. Import repository
+4. Set root directory to `frontend`
+5. Deploy!
+
+### Separate Backend Deployment
+
+If using the Python backend separately, see [DEPLOYMENT.md](./DEPLOYMENT.md) for options.
+
 ## Customization
 
 ### Adding More Symptoms
@@ -177,11 +190,11 @@ Edit `frontend/app/components/SymptomSelector.tsx` to add more symptoms to the l
 
 ### Adding More Conditions
 
-Edit `backend/symptom_predictor.py` and add new entries to the `condition_symptoms` dictionary.
+Edit `frontend/lib/symptomPredictor.ts` and add new entries to the `conditionSymptoms` object.
 
 ### Replacing with ML Model
 
-Replace the `SymptomPredictor` class logic in `symptom_predictor.py` with your trained model's prediction logic.
+Replace the `SymptomPredictor` class logic in `frontend/lib/symptomPredictor.ts` with your trained model's prediction logic.
 
 ## Important Disclaimer
 

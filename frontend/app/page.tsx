@@ -5,7 +5,8 @@ import SymptomSelector from './components/SymptomSelector'
 import ResultsDisplay from './components/ResultsDisplay'
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+// Use local API routes (no external backend needed)
+const API_URL = ''
 
 export default function Home() {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
@@ -33,7 +34,7 @@ export default function Home() {
     setError(null)
 
     try {
-      const response = await axios.post(`${API_URL}/api/predict`, {
+      const response = await axios.post('/api/predict', {
         symptoms: selectedSymptoms,
       })
       setResults(response.data)
