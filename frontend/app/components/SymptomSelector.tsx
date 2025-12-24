@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useLanguage } from '../contexts/LanguageContext'
+import { getSymptomName } from '../lib/symptomTranslations'
+import { getCategoryTranslationKey } from '../lib/categoryTranslations'
 
 interface SymptomSelectorProps {
   selectedSymptoms: string[]
@@ -228,7 +231,11 @@ function SymptomModal({
   selectedSymptoms,
   onSymptomToggle,
 }: SymptomModalProps) {
+  const { t, language, isRTL } = useLanguage()
   if (!category) return null
+
+  const categoryKey = getCategoryTranslationKey(category.name)
+  const categoryName = categoryKey ? t.categories[categoryKey] : category.name
 
   return (
     <>
@@ -244,26 +251,27 @@ function SymptomModal({
         className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl z-50 md:hidden max-h-[85vh] flex flex-col transition-transform duration-300 ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
+        dir={isRTL ? 'rtl' : 'ltr'}
       >
         {/* Drag Handle */}
         <div className="flex justify-center pt-2 pb-1">
           <div className="w-12 h-1 bg-gray-300 rounded-full" />
         </div>
         {/* Header */}
-        <div className="flex items-center justify-between px-4 pb-3 border-b sticky top-0 bg-white rounded-t-2xl">
-          <div className="flex items-center gap-3">
+        <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''} justify-between px-4 pb-3 border-b sticky top-0 bg-white rounded-t-2xl`}>
+          <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <span className="text-2xl">{category.icon}</span>
             <h3 className="text-lg font-semibold text-gray-800">
-              {category.name}
+              {categoryName}
             </h3>
             <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
-              {category.symptoms.filter(s => selectedSymptoms.includes(s)).length} selected
+              {category.symptoms.filter(s => selectedSymptoms.includes(s)).length} {t.common.selected}
             </span>
           </div>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            aria-label="Close modal"
+            aria-label={t.common.close}
           >
             <svg
               className="w-6 h-6 text-gray-600"
@@ -291,13 +299,13 @@ function SymptomModal({
                   onClick={() => {
                     onSymptomToggle(symptom)
                   }}
-                  className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium text-left ${
+                  className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${isRTL ? 'text-right' : 'text-left'} ${
                     isSelected
                       ? 'bg-blue-500 text-white border-blue-600 shadow-md'
                       : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50'
                   }`}
                 >
-                  {symptom}
+                  {getSymptomName(symptom, language)}
                 </button>
               )
             })}
@@ -312,6 +320,7 @@ export default function SymptomSelector({
   selectedSymptoms,
   onSymptomToggle,
 }: SymptomSelectorProps) {
+  const { t, language, isRTL } = useLanguage()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [mobileModalOpen, setMobileModalOpen] = useState(false)
 
@@ -335,16 +344,18 @@ export default function SymptomSelector({
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-6 h-full">
+      <div className={`flex flex-col md:flex-row gap-6 h-full ${isRTL ? 'md:flex-row-reverse' : ''}`}>
         {/* Sidebar for Desktop */}
-        <aside className="hidden md:flex md:flex-col md:w-64 lg:w-72 bg-gray-50 rounded-lg p-4 h-fit sticky top-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Body Parts
+        <aside className={`hidden md:flex md:flex-col md:w-64 lg:w-72 bg-gray-50 rounded-lg p-4 h-fit sticky top-4 ${isRTL ? 'md:order-2' : ''}`}>
+          <h2 className={`text-xl font-semibold text-gray-800 mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+            {t.selector.selectBodyPart}
           </h2>
           <nav className="space-y-2">
             {SYMPTOM_CATEGORIES.map(category => {
               const count = getCategorySelectedCount(category)
               const isActive = selectedCategory === category.name
+              const categoryKey = getCategoryTranslationKey(category.name)
+              const categoryName = categoryKey ? t.categories[categoryKey] : category.name
 
               return (
                 <button
@@ -354,15 +365,15 @@ export default function SymptomSelector({
                       isActive ? null : category.name
                     )
                   }}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between ${
+                  className={`w-full ${isRTL ? 'text-right' : 'text-left'} px-4 py-3 rounded-lg transition-all duration-200 flex items-center ${isRTL ? 'flex-row-reverse' : ''} justify-between ${
                     isActive
                       ? 'bg-blue-500 text-white shadow-md'
                       : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <span className="text-xl">{category.icon}</span>
-                    <span className="font-medium text-sm">{category.name}</span>
+                    <span className="font-medium text-sm">{categoryName}</span>
                   </div>
                   {count > 0 && (
                     <span
@@ -383,22 +394,24 @@ export default function SymptomSelector({
 
         {/* Mobile List View */}
         <div className="md:hidden">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Select Body Part
+          <h2 className={`text-xl font-semibold text-gray-800 mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+            {t.selector.selectBodyPart}
           </h2>
           <div className="space-y-2">
             {SYMPTOM_CATEGORIES.map(category => {
               const count = getCategorySelectedCount(category)
+              const categoryKey = getCategoryTranslationKey(category.name)
+              const categoryName = categoryKey ? t.categories[categoryKey] : category.name
               return (
                 <button
                   key={category.name}
                   onClick={() => handleCategoryClick(category)}
-                  className="w-full text-left px-4 py-4 rounded-lg bg-white border border-gray-200 hover:bg-blue-50 transition-colors flex items-center justify-between"
+                  className={`w-full ${isRTL ? 'text-right' : 'text-left'} px-4 py-4 rounded-lg bg-white border border-gray-200 hover:bg-blue-50 transition-colors flex items-center ${isRTL ? 'flex-row-reverse' : ''} justify-between`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <span className="text-2xl">{category.icon}</span>
                     <span className="font-medium text-gray-800">
-                      {category.name}
+                      {categoryName}
                     </span>
                   </div>
                   {count > 0 ? (
@@ -407,7 +420,7 @@ export default function SymptomSelector({
                     </span>
                   ) : (
                     <svg
-                      className="w-5 h-5 text-gray-400"
+                      className={`w-5 h-5 text-gray-400 ${isRTL ? 'rotate-180' : ''}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -427,18 +440,21 @@ export default function SymptomSelector({
         </div>
 
         {/* Main Content Area - Desktop */}
-        <div className="hidden md:block flex-1">
+        <div className={`hidden md:block flex-1 ${isRTL ? 'md:order-1' : ''}`}>
           {selectedCategory ? (
             <div>
-              <div className="mb-4 flex items-center gap-3">
+              <div className={`mb-4 flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <span className="text-3xl">
                   {
                     SYMPTOM_CATEGORIES.find(c => c.name === selectedCategory)
                       ?.icon
                   }
                 </span>
-                <h2 className="text-2xl font-semibold text-gray-800">
-                  {selectedCategory}
+                <h2 className={`text-2xl font-semibold text-gray-800 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {(() => {
+                    const categoryKey = getCategoryTranslationKey(selectedCategory)
+                    return categoryKey ? t.categories[categoryKey] : selectedCategory
+                  })()}
                 </h2>
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -449,13 +465,13 @@ export default function SymptomSelector({
                       <button
                         key={symptom}
                         onClick={() => onSymptomToggle(symptom)}
-                        className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium text-left ${
+                        className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${isRTL ? 'text-right' : 'text-left'} ${
                           isSelected
                             ? 'bg-blue-500 text-white border-blue-600 shadow-md'
                             : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50'
                         }`}
                       >
-                        {symptom}
+                        {getSymptomName(symptom, language)}
                       </button>
                     )
                   })}
@@ -463,9 +479,9 @@ export default function SymptomSelector({
             </div>
           ) : (
             <div className="flex items-center justify-center h-64 text-gray-400">
-              <div className="text-center">
-                <p className="text-lg mb-2">Select a body part</p>
-                <p className="text-sm">Choose a category from the sidebar to view symptoms</p>
+              <div className={`text-center ${isRTL ? 'text-right' : 'text-left'}`}>
+                <p className="text-lg mb-2">{t.selector.selectBodyPart}</p>
+                <p className="text-sm">{t.selector.selectCategory}</p>
               </div>
             </div>
           )}
